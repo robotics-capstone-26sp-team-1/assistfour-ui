@@ -18,6 +18,7 @@
     "@primeuix/themes": "^2.0.3",
     "@tailwindcss/vite": "^4.2.4",
     "primevue": "^4.5.5",
+    "roslib": "^2.1.0",
     "tailwindcss": "^4.2.4",
     "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.32"

@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ROSBridgeConnection from '@/components/ROSBridgeConnection.vue'
+import PoseManager from '@/components/PoseManager.vue'
+import Sequencer from '@/components/Sequencer.vue'
+</script>
 
 <template>
   <div class="container mx-auto">
@@ -8,44 +12,10 @@
       </template>
     </Menubar>
     <br />
-    <Panel header="ROS Bridge Connection">
-      <div class="flex gap-4">
-        <IftaLabel>
-          <InputText id="ros-bridge-ip" />
-          <label for="ros-bridge-ip">IP address</label>
-        </IftaLabel>
-        <Button label="Connect" />
-      </div>
-    </Panel>
+    <ROSBridgeConnection />
     <br />
-    <Panel header="Pose Manager">
-      <h3 class="text-lg">Add a Pose</h3>
-      <div class="flex gap-4">
-        <IftaLabel>
-          <InputText id="pose-name" />
-          <label for="pose-name">Pose name</label>
-        </IftaLabel>
-        <Button label="Save" />
-      </div>
-      <br />
-      <h3 class="text-lg">Select a Pose</h3>
-      <Listbox filter />
-      <br />
-      <div class="flex gap-4">
-        <Button label="Delete Pose" severity="danger" />
-        <Button label="Add to Sequence" />
-      </div>
-    </Panel>
+    <PoseManager />
     <br />
-    <Panel header="Sequencer">
-      <Listbox multiple />
-      <br />
-      <div class="flex gap-4">
-        <Button label="Delete Pose" severity="danger" />
-        <Button label="Run" />
-      </div>
-    </Panel>
+    <Sequencer />
   </div>
 </template>
-
-<style scoped></style>
