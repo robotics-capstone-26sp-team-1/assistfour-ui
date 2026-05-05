@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ROSBridgeConnection from '@/components/ROSBridgeConnection.vue'
 import PoseManager from '@/components/PoseManager.vue'
-import Sequencer from '@/components/Sequencer.vue'
+import PoseSequencer from '@/components/PoseSequencer.vue'
 </script>
 
 <template>
@@ -16,6 +16,6 @@ import Sequencer from '@/components/Sequencer.vue'
     <br />
     <PoseManager />
     <br />
-    <Sequencer />
+    <PoseSequencer />
   </div>
 </template>

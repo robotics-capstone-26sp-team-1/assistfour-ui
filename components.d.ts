@@ -18,5 +18,10 @@ declare module 'vue' {
     Listbox: typeof import('primevue/listbox')['default']
     Menubar: typeof import('primevue/menubar')['default']
     Panel: typeof import('primevue/panel')['default']
+    PoseManager: typeof import('./src/components/PoseManager.vue')['default']
+    PoseSequencer: typeof import('./src/components/PoseSequencer.vue')['default']
+    ProgressBar: typeof import('primevue/progressbar')['default']
+    ProgressSpinner: typeof import('primevue/progressspinner')['default']
+    ROSBridgeConnection: typeof import('./src/components/ROSBridgeConnection.vue')['default']
   }
 }
