@@ -3,7 +3,7 @@ import { Ros } from 'roslib'
 import { ref } from 'vue'
 
 // Connection state.
-const ros = new Ros()
+const { ros } = defineProps<{ ros: Ros }>()
 const rosConnected = ref(false)
 const rosIp = ref('localhost')
 const emit = defineEmits(['connected', 'disconnected'])

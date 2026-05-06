@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import {frame} from './types'
+import { type NamedLink, frames } from '@/types/messages'
+import { defaultTransform, type RosTransformStamped } from '@/types/ros.ts'
+
+// Props.
+const { poses } = defineProps<{ poses: Record<string, RosTransformStamped> }>()
 
 // State.
-// TODO: store the correct pose type.
-const poses = ref<Record<string, string[]>>({})
-const poseOptions = computed(() => Object.keys(poses.value))
+const poseOptions = computed(() => Object.keys(poses))
 const poseName = ref('')
 const selectedPose = ref<string | undefined>()
 const selectedFrame = ref('base_link')
+
+// Events.
 const emit = defineEmits<{
-  (e: 'onPoseSave', name: string, pose: string): void
-  (e: 'onPoseSent', name: string): void
+  (e: 'onPoseSave', name: string, pose: RosTransformStamped): void
+  (e: 'onDeletePose', name: string): void
+  (e: 'onPoseSent', pose: NamedLink): void
 }>()
 
 // Functions.
@@ -19,15 +24,15 @@ function addPose() {
   // Ignore on blank name.
   if (poseName.value === '') return
 
-  poses.value[poseName.value] = []
+  // TODO: update with actually getting the transform.
+  emit('onPoseSave', poseName.value, defaultTransform())
 }
 function deletePose() {
-  delete poses.value[selectedPose.value!]
+  emit('onDeletePose', selectedPose.value!)
   selectedPose.value = undefined
 }
 function sendPose() {
-  // TODO: extract correct pose based on selectedFrame
-  emit('onPoseSent', selectedPose.value!, selectedFrame.value)
+  emit('onPoseSent', { name: selectedPose.value!, link: selectedFrame.value })
 }
 </script>
 

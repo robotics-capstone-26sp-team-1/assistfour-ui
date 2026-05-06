@@ -4,25 +4,30 @@ import PoseManager from '@/components/PoseManager.vue'
 import PoseSequencer from '@/components/PoseSequencer.vue'
 
 import { ref } from 'vue'
+import { Ros } from 'roslib'
+import type { RosTransformStamped } from '@/types/ros.ts'
+import type { NamedLink } from '@/types/messages.ts'
+
+/// ROS instance.
+const ros = new Ros()
 
 /// Connected to ROS bridge
 const isConnected = ref(true)
 
 /// Recording of all poses.
-const poses = ref<Record<string, string>>({})
+const poses = ref<Record<string, RosTransformStamped>>({})
 
 /// Ordered pose names.
-const sequence = ref<string[]>([])
+const sequence = ref<NamedLink[]>([])
 
-// TODO: convert to pose type
-function addPose(name: string, pose: string) {
-  // Ignore on blank name.
-  if (name === '') return
-
-  poses
+function addPose(name: string, pose: RosTransformStamped) {
+  poses.value[name] = pose
 }
 function deletePose(name: string) {
   delete poses.value[name]
+}
+function addPoseToSequence(pose: NamedLink) {
+  sequence.value.push(pose)
 }
 </script>
 
@@ -34,10 +39,19 @@ function deletePose(name: string) {
       </template>
     </Menubar>
     <br />
-    <ROSBridgeConnection @connected="isConnected = true" @disconnected="isConnected = false" />
+    <ROSBridgeConnection
+      :ros="ros"
+      @connected="isConnected = true"
+      @disconnected="isConnected = false"
+    />
     <br />
     <div v-if="isConnected">
-      <PoseManager />
+      <PoseManager
+        :poses="poses"
+        @onPoseSave="addPose"
+        @onDeletePose="deletePose"
+        @onPoseSent="addPoseToSequence"
+      />
       <br />
       <PoseSequencer :sequence="poses" @onDeletePose="deletePose" />
     </div>
