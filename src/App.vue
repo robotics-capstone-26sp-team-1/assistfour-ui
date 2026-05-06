@@ -5,7 +5,25 @@ import PoseSequencer from '@/components/PoseSequencer.vue'
 
 import { ref } from 'vue'
 
+/// Connected to ROS bridge
 const isConnected = ref(true)
+
+/// Recording of all poses.
+const poses = ref<Record<string, string>>({})
+
+/// Ordered pose names.
+const sequence = ref<string[]>([])
+
+// TODO: convert to pose type
+function addPose(name: string, pose: string) {
+  // Ignore on blank name.
+  if (name === '') return
+
+  poses
+}
+function deletePose(name: string) {
+  delete poses.value[name]
+}
 </script>
 
 <template>
@@ -21,7 +39,7 @@ const isConnected = ref(true)
     <div v-if="isConnected">
       <PoseManager />
       <br />
-      <PoseSequencer />
+      <PoseSequencer :sequence="poses" @onDeletePose="deletePose" />
     </div>
   </div>
 </template>
