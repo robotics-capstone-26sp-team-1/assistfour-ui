@@ -57,6 +57,7 @@ function removePoseFromSequence(index: number) {
       />
       <br />
       <PoseSequencer
+        :ros="ros"
         :poses="poses"
         :sequence="sequence"
         @onDeleteFromSequence="removePoseFromSequence"

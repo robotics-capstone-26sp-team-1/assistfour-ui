@@ -33,11 +33,10 @@ export type SetPoseGoal = {
   target_pose: RosTransformStamped
 }
 
-export type SetPoseFeedback = {
-  status: string
-}
-
 export type SetPoseResult = {
   success: boolean
   message: string
+}
+export type SetPoseFeedback = {
+  status: string
 }
