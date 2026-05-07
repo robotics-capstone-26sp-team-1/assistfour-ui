@@ -11,7 +11,7 @@ import type { GetPoseResponse, NamedLink } from '@/types/messages.ts'
 const ros = new Ros()
 
 /// Connected to ROS bridge
-const isConnected = ref(true)
+const isConnected = ref(false)
 
 /// Recording of all poses.
 const poses = ref<Record<string, GetPoseResponse>>({})
