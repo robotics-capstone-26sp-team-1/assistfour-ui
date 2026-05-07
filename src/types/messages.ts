@@ -1,4 +1,4 @@
-import type { RosTransformStamped } from '@/types/ros'
+import { defaultRosTransform, type RosTransformStamped } from '@/types/ros'
 
 export type NamedLink = {
   name: string
@@ -18,6 +18,14 @@ export type GetPoseResponse = {
   success: boolean
   message: string
 }
+
+export const defaultGetPoseResponse = (): GetPoseResponse => ({
+  world_pose: defaultRosTransform(),
+  robot_pose: defaultRosTransform(),
+  aruco_pose: defaultRosTransform(),
+  success: true,
+  message: '',
+})
 
 export type SetPoseGoal = {
   target_pose: RosTransformStamped

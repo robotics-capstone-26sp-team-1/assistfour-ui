@@ -21,7 +21,7 @@ export type RosTransformStamped = {
   transform: RosTransform
 }
 
-export const defaultTransform = (): RosTransformStamped => ({
+export const defaultRosTransform = (): RosTransformStamped => ({
   header: {
     stamp: { sec: 0, nanosec: 0 },
     frame_id: '',

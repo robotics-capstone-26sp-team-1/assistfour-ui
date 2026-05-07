@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { type NamedLink, frames } from '@/types/messages'
-import { defaultTransform, type RosTransformStamped } from '@/types/ros.ts'
+import {
+  type NamedLink,
+  frames,
+  type GetPoseResponse,
+  defaultGetPoseResponse,
+} from '@/types/messages'
 
 // Props.
-const { poses } = defineProps<{ poses: Record<string, RosTransformStamped> }>()
+const { poses } = defineProps<{ poses: Record<string, GetPoseResponse> }>()
 
 // State.
 const poseOptions = computed(() => Object.keys(poses))
@@ -14,7 +18,7 @@ const selectedFrame = ref('base_link')
 
 // Events.
 const emit = defineEmits<{
-  (e: 'onPoseSave', name: string, pose: RosTransformStamped): void
+  (e: 'onPoseSave', name: string, pose: GetPoseResponse): void
   (e: 'onDeletePose', name: string): void
   (e: 'onPoseSent', pose: NamedLink): void
 }>()
@@ -25,7 +29,7 @@ function addPose() {
   if (poseName.value === '') return
 
   // TODO: update with actually getting the transform.
-  emit('onPoseSave', poseName.value, defaultTransform())
+  emit('onPoseSave', poseName.value, defaultGetPoseResponse())
 }
 function deletePose() {
   emit('onDeletePose', selectedPose.value!)

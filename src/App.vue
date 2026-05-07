@@ -5,8 +5,7 @@ import PoseSequencer from '@/components/PoseSequencer.vue'
 
 import { ref } from 'vue'
 import { Ros } from 'roslib'
-import type { RosTransformStamped } from '@/types/ros.ts'
-import type { NamedLink } from '@/types/messages.ts'
+import type { GetPoseResponse, NamedLink } from '@/types/messages.ts'
 
 /// ROS instance.
 const ros = new Ros()
@@ -15,12 +14,12 @@ const ros = new Ros()
 const isConnected = ref(true)
 
 /// Recording of all poses.
-const poses = ref<Record<string, RosTransformStamped>>({})
+const poses = ref<Record<string, GetPoseResponse>>({})
 
 /// Ordered pose names.
 const sequence = ref<NamedLink[]>([])
 
-function addPose(name: string, pose: RosTransformStamped) {
+function addPose(name: string, pose: GetPoseResponse) {
   poses.value[name] = pose
 }
 function deletePose(name: string) {
@@ -28,6 +27,9 @@ function deletePose(name: string) {
 }
 function addPoseToSequence(pose: NamedLink) {
   sequence.value.push(pose)
+}
+function removePoseFromSequence(pose: string) {
+  sequence.value = sequence.value.filter((p) => p.name !== pose)
 }
 </script>
 
@@ -53,7 +55,11 @@ function addPoseToSequence(pose: NamedLink) {
         @onPoseSent="addPoseToSequence"
       />
       <br />
-      <PoseSequencer :sequence="poses" @onDeletePose="deletePose" />
+      <PoseSequencer
+        :poses="poses"
+        :sequence="sequence"
+        @onDeleteFromSequence="removePoseFromSequence"
+      />
     </div>
   </div>
 </template>
