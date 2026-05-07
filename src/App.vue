@@ -49,6 +49,7 @@ function removePoseFromSequence(index: number) {
     <br />
     <div v-if="isConnected">
       <PoseManager
+        :ros="ros"
         :poses="poses"
         @onPoseSave="addPose"
         @onDeletePose="deletePose"

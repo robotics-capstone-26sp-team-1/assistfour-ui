@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import {
-  type NamedLink,
-  frames,
-  type GetPoseResponse,
-  defaultGetPoseResponse,
-} from '@/types/messages'
+import { type NamedLink, frames, type GetPoseResponse, type GetPoseRequest } from '@/types/messages'
+import { Service, type Ros } from 'roslib'
 
 // Props.
-const { poses } = defineProps<{ poses: Record<string, GetPoseResponse> }>()
+const { ros, poses } = defineProps<{ ros: Ros; poses: Record<string, GetPoseResponse> }>()
+const getPoseService = new Service<GetPoseRequest, GetPoseResponse>({
+  ros,
+  name: '/get_pose',
+  serviceType: 'stretch_pose_interfaces/srv/GetPose',
+})
 
 // State.
 const poseOptions = computed(() => Object.keys(poses))
@@ -28,8 +29,17 @@ function addPose() {
   // Ignore on blank name.
   if (poseName.value === '') return
 
-  // TODO: update with actually getting the transform.
-  emit('onPoseSave', poseName.value, defaultGetPoseResponse())
+  const request: GetPoseRequest = {}
+  getPoseService.callService(
+    request,
+    (response) => {
+      emit('onPoseSave', poseName.value, response)
+      poseName.value = ''
+    },
+    (error) => {
+      console.error(`Failed to call /get_pose: ${error}`)
+    },
+  )
 }
 function deletePose() {
   emit('onDeletePose', selectedPose.value!)

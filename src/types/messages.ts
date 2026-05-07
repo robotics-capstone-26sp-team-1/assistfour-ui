@@ -11,6 +11,8 @@ export const frames: NamedLink[] = [
   { name: 'AruCo', link: 'column_4' },
 ]
 
+export type GetPoseRequest = Record<string, never>
+
 export type GetPoseResponse = {
   world_pose: RosTransformStamped
   robot_pose: RosTransformStamped
