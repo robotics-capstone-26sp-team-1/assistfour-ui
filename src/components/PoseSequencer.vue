@@ -21,10 +21,10 @@ const { ros, poses, sequence } = defineProps<{
 const selectedPose = ref<number | undefined>()
 const sequenceOptions = computed(() => sequence.map(({ name }, index) => ({ name, index })))
 const setPoseAction = new Action<SetPoseGoal, SetPoseFeedback, SetPoseResult>({
-    ros,
-    name: '/set_pose',
-    actionType: 'stretch_pose_interfaces/action/SetPose',
-  })
+  ros,
+  name: '/set_pose',
+  actionType: 'stretch_pose_interfaces/action/SetPose',
+})
 
 // Events.
 const emit = defineEmits<{ (e: 'onDeleteFromSequence', index: number): void }>()
