@@ -20,17 +20,14 @@ const { ros, poses, sequence } = defineProps<{
 // State.
 const selectedPose = ref<number | undefined>()
 const sequenceOptions = computed(() => sequence.map(({ name }, index) => ({ name, index })))
-const setPoseAction = ref<Action<SetPoseGoal, SetPoseFeedback, SetPoseResult> | undefined>()
-
-// Events.
-const emit = defineEmits<{ (e: 'onDeleteFromSequence', index: number): void }>()
-ros.on('connection', () => {
-  setPoseAction.value = new Action<SetPoseGoal, SetPoseFeedback, SetPoseResult>({
+const setPoseAction = new Action<SetPoseGoal, SetPoseFeedback, SetPoseResult>({
     ros,
     name: '/set_pose',
     actionType: 'stretch_pose_interfaces/action/SetPose',
   })
-})
+
+// Events.
+const emit = defineEmits<{ (e: 'onDeleteFromSequence', index: number): void }>()
 
 // Functions.
 function deletePose() {
@@ -47,7 +44,7 @@ function getTargetPoseFromLink(pose: GetPoseResponse, link: string): RosTransfor
 
 async function runSetPoseGoal(goalMessage: SetPoseGoal): Promise<void> {
   await new Promise<void>((resolve, reject) => {
-    setPoseAction.value!.sendGoal(
+    setPoseAction.sendGoal(
       goalMessage,
       (result: SetPoseResult) => {
         console.log('Result: ', result)

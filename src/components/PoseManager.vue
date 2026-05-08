@@ -62,7 +62,7 @@ function sendPose() {
     </div>
     <br />
     <h3 class="text-lg">Select a Pose</h3>
-    <Listbox v-model="selectedPose" :options="poseOptions" filter />
+    <Listbox v-model="selectedPose" :options="poseOptions" />
     <br />
     <Button label="Delete Pose" severity="danger" :disabled="!selectedPose" @click="deletePose" />
     <br />
