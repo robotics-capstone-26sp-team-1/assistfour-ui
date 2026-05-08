@@ -33,8 +33,12 @@ function addPose() {
   getPoseService.callService(
     request,
     (response) => {
-      emit('onPoseSave', poseName.value, response)
-      poseName.value = ''
+      if (response.success) {
+        emit('onPoseSave', poseName.value, response)
+        poseName.value = ''
+      } else {
+        console.error(response.message)
+      }
     },
     (error) => {
       console.error(`Failed to call /get_pose: ${error}`)
@@ -46,7 +50,7 @@ function deletePose() {
   selectedPose.value = undefined
 }
 function sendPose() {
-  emit('onPoseSent', { name: selectedPose.value!, link: selectedFrame.value})
+  emit('onPoseSent', { name: selectedPose.value!, link: selectedFrame.value })
 }
 </script>
 
