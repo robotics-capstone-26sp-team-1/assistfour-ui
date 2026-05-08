@@ -46,19 +46,16 @@ async function runSetPoseGoal(goalMessage: SetPoseGoal): Promise<void> {
   await new Promise<void>((resolve, reject) => {
     setPoseAction.sendGoal(
       goalMessage,
-      (result) => {
-        console.log('set_pose result:', result)
-        if (!result.success) {
+      (result: SetPoseResult) => {
+        console.log('Result: ', result)
+        if (result.success) {
+          resolve()
+        } else {
           reject(new Error(result.message))
-          return
         }
-        resolve()
       },
-      (feedback) => {
-        console.log('set_pose feedback:', feedback)
-      },
-      (error) => {
-        reject(new Error(error))
+      (feedback: SetPoseFeedback) => {
+        console.log('Feedback: ', feedback)
       },
     )
   })
