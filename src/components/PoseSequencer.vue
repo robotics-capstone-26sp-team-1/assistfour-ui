@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ActionClient, Goal, type Ros } from 'roslib'
+import { Action, type Ros } from 'roslib'
 import type {
   GetPoseResponse,
   NamedLink,
@@ -20,6 +20,11 @@ const { ros, poses, sequence } = defineProps<{
 // State.
 const selectedPose = ref<number | undefined>()
 const sequenceOptions = computed(() => sequence.map(({ name }, index) => ({ name, index })))
+const setPoseAction = new Action<SetPoseGoal, SetPoseFeedback, SetPoseResult>({
+  ros,
+  name: '/set_pose',
+  actionType: 'stretch_pose_interfaces/action/SetPose',
+})
 
 // Events.
 const emit = defineEmits<{ (e: 'onDeleteFromSequence', index: number): void }>()
@@ -37,60 +42,22 @@ function getTargetPoseFromLink(pose: GetPoseResponse, link: string): RosTransfor
   throw new Error(`Unsupported sequence link: ${link}`)
 }
 
-function asSetPoseFeedback(event: unknown): SetPoseFeedback | null {
-  if (!event || typeof event !== 'object') return null
-  const payload = 'feedback' in event ? event.feedback : event
-  if (!payload || typeof payload !== 'object' || !('status' in payload)) return null
-  if (typeof payload.status !== 'string') return null
-  return payload as SetPoseFeedback
-}
-
-function asSetPoseResult(event: unknown): SetPoseResult | null {
-  if (!event || typeof event !== 'object') return null
-  const payload = 'result' in event ? event.result : event
-  if (!payload || typeof payload !== 'object') return null
-  if (!('success' in payload) || !('message' in payload)) return null
-  if (typeof payload.success !== 'boolean' || typeof payload.message !== 'string') return null
-  return payload as SetPoseResult
-}
-
 async function runSetPoseGoal(goalMessage: SetPoseGoal): Promise<void> {
-  const actionClient = new ActionClient({
-    ros,
-    serverName: '/set_pose',
-    actionName: 'stretch_pose_interfaces/action/SetPose',
-  })
-  const goal = new Goal({
-    actionClient,
-    goalMessage,
-  })
-
   await new Promise<void>((resolve, reject) => {
-    goal.on('feedback', (feedbackEvent: unknown) => {
-      console.log('set_pose feedback:', asSetPoseFeedback(feedbackEvent) ?? feedbackEvent)
-    })
-    goal.on('result', (resultEvent: unknown) => {
-      const result = asSetPoseResult(resultEvent)
-      if (!result) {
-        actionClient.dispose()
-        reject(new Error('set_pose returned an invalid result payload'))
-        return
-      }
-      console.log('set_pose result:', result)
-      actionClient.dispose()
-
-      if (!result.success) {
-        reject(new Error(result.message))
-        return
-      }
-      resolve()
-    })
-    goal.on('timeout', () => {
-      actionClient.dispose()
-      reject(new Error('set_pose action timed out'))
-    })
-
-    goal.send()
+    setPoseAction.sendGoal(
+      goalMessage,
+      (result: SetPoseResult) => {
+        console.log('Result: ', result)
+        if (result.success) {
+          resolve()
+        } else {
+          reject(new Error(result.message))
+        }
+      },
+      (feedback: SetPoseFeedback) => {
+        console.log('Feedback: ', feedback)
+      },
+    )
   })
 }
 
