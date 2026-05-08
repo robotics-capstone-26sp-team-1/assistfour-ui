@@ -50,6 +50,10 @@ function disconnectFromRos() {
 
 <template>
   <Panel header="ROS Bridge Connection">
+    <div class="flex gap-4 mb-4">
+      <Button label="Slinky" severity="secondary" @click="rosIp = 'slinky.hcrlab.cs.washington.edu'" />
+      <Button label="Weird-Stretch" severity="secondary" @click="rosIp = 'weird-stretch.cs.washington.edu'" />
+    </div>
     <div class="flex gap-4">
       <IftaLabel>
         <InputText id="ros-bridge-ip" v-model="rosIp" />
