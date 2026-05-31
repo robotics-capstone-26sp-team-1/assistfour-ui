@@ -1,4 +1,6 @@
 // Goto Marker action message types.
+export type GotoMarkerGoal = object
+
 export type GotoMarkerResult = {
   result: string;
 }
