@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Action, type Ros } from 'roslib'
+import type { Action } from 'roslib'
 import {
   createPlayColumnGoal,
   type PlayColumnFeedback,
@@ -7,36 +7,35 @@ import {
   type PlayColumnResult,
 } from '@/types/messages.ts'
 
-/// Props.
-const { ros } = defineProps<{ ros: Ros }>()
-const emit = defineEmits<{
-  (e: 'moving', action: Action): void
-  (e: 'done'): void
+/// Props: receive action client from App.vue
+const props = defineProps<{
+  action: Action<PlayColumnGoal, PlayColumnFeedback, PlayColumnResult>
 }>()
-
-/// Action client.
-const playColumnAction = new Action<PlayColumnGoal, PlayColumnFeedback, PlayColumnResult>({
-  ros,
-  name: '/play_column',
-  actionType: 'assistfour/action/PlayColumn',
-})
+const emit = defineEmits(['moving', 'done'])
 
 /// Functions.
 function callPlayColumn(column: number) {
   console.log('Play column', column)
-  playColumnAction.sendGoal(
-    createPlayColumnGoal(column),
-    (result: PlayColumnResult) => {
-      emit('done')
-      if (result.result !== '') {
-        console.error('Play Column ended with error: ', result.result)
-      }
-    },
-    (feedback: PlayColumnFeedback) => {
-      console.log('Play Column feedback: ', feedback)
-    },
-  )
-  emit('moving', playColumnAction)
+  emit('moving')
+
+  try {
+    props.action.sendGoal(
+      createPlayColumnGoal(column),
+      (result: PlayColumnResult) => {
+        emit('done')
+        if (result.result && result.result !== '') {
+          console.error('Play Column ended with error: ', result.result)
+        }
+      },
+      (feedback: PlayColumnFeedback) => {
+        console.log('Play Column feedback: ', feedback)
+      },
+    )
+  } catch (err) {
+    console.error('Failed to send PlayColumn goal', err)
+    // Ensure UI state is restored if sending the goal fails immediately
+    emit('done')
+  }
 }
 </script>
 

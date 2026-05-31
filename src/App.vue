@@ -3,6 +3,14 @@ import ROSBridgeConnection from '@/components/ROSBridgeConnection.vue'
 
 import { ref } from 'vue'
 import { Action, Ros } from 'roslib'
+import type {
+  GotoMarkerGoal,
+  GotoMarkerFeedback,
+  GotoMarkerResult,
+  PlayColumnFeedback,
+  PlayColumnResult,
+  PlayColumnGoal,
+} from './types/messages.ts'
 import GetToken from './components/GetToken.vue'
 import PlayColumn from './components/PlayColumn.vue'
 import ReturnToStart from './components/ReturnToStart.vue'
@@ -11,27 +19,54 @@ import ReturnToStart from './components/ReturnToStart.vue'
 const ros = new Ros()
 
 /// Connected to ROS bridge.
-const isConnected = ref(true)
+const isConnected = ref(false)
 
-/// Action in progress.
-const actionInProgress = ref<Action>()
+/// Action clients.
+const getTokenAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
+  ros,
+  name: '/get_token',
+  actionType: 'assistfour/action/GotoMarker',
+})
+const playColumnAction = new Action<PlayColumnGoal, PlayColumnFeedback, PlayColumnResult>({
+  ros,
+  name: '/play_column',
+  actionType: 'assistfour/action/PlayColumn',
+})
+const returnToStartAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
+  ros,
+  name: '/return_to_start',
+  actionType: 'assistfour/action/GotoMarker',
+})
+
+/// Action in progress flag.
+const isActionInProgress = ref(false)
 
 /**
- * Set the action in progress.
- * @param action Action to set as being active.
- */
-function setActionInProgress(action: Action): void {
-  actionInProgress.value = action
-}
-
-/**
- * Cancel all goals on the active action.
+ * Cancel all goals on the action clients.
  */
 function stopActionInProgress(): void {
-  if (!actionInProgress.value) return
-
-  actionInProgress.value.cancelAllGoals()
-  actionInProgress.value = undefined
+  if (typeof getTokenAction?.cancelAllGoals === 'function') {
+    try {
+      getTokenAction.cancelAllGoals()
+    } catch (err) {
+      console.error('Failed to cancel goals on getTokenAction:', err)
+    }
+  }
+  if (typeof playColumnAction?.cancelAllGoals === 'function') {
+    try {
+      playColumnAction.cancelAllGoals()
+    } catch (err) {
+      console.error('Failed to cancel goals on playColumnAction:', err)
+    }
+  }
+  if (typeof returnToStartAction?.cancelAllGoals === 'function') {
+    try {
+      returnToStartAction.cancelAllGoals()
+    } catch (err) {
+      console.error('Failed to cancel goals on returnToStartAction:', err)
+    }
+  }
+  isActionInProgress.value = false
 }
 </script>
 
@@ -50,15 +85,23 @@ function stopActionInProgress(): void {
     />
     <br />
     <Panel header="Game Controls" v-if="isConnected">
-      <div v-if="!actionInProgress" class="flex gap-4">
-        <GetToken :ros="ros" @done="actionInProgress = undefined" @moving="setActionInProgress" />
+      <div v-if="!isActionInProgress" class="flex gap-4">
+        <GetToken
+          :action="getTokenAction"
+          @moving="isActionInProgress = true"
+          @done="isActionInProgress = false"
+        />
         <div />
-        <PlayColumn :ros="ros" @done="actionInProgress = undefined" @moving="setActionInProgress" />
+        <PlayColumn
+          :action="playColumnAction"
+          @moving="isActionInProgress = true"
+          @done="isActionInProgress = false"
+        />
         <div />
         <ReturnToStart
-          :ros="ros"
-          @done="actionInProgress = undefined"
-          @moving="setActionInProgress"
+          :action="returnToStartAction"
+          @moving="isActionInProgress = true"
+          @done="isActionInProgress = false"
         />
       </div>
       <Button

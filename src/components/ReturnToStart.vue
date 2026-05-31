@@ -1,36 +1,40 @@
 <script setup lang="ts">
-import { Action, type Ros } from 'roslib'
-import type { GotoMarkerFeedback, GotoMarkerGoal, GotoMarkerResult } from '@/types/messages.ts'
+import type { Action } from 'roslib'
+import {
+  createGotoMarkerGoal,
+  type GotoMarkerFeedback,
+  type GotoMarkerGoal,
+  type GotoMarkerResult,
+} from '@/types/messages.ts'
 
-/// Props.
-const { ros } = defineProps<{ ros: Ros }>()
-const emit = defineEmits<{
-  (e: 'moving', action: Action): void
-  (e: 'done'): void
+/// Props: receive action client from App.vue
+const props = defineProps<{
+  action: Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>
 }>()
-
-/// Action client.
-const returnToStartAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
-  ros,
-  name: '/return_to_start',
-  actionType: 'assistfour/action/GotoMarker',
-})
+const emit = defineEmits(['moving', 'done'])
 
 /// Functions.
 function callReturnToStart() {
-  returnToStartAction.sendGoal(
-    {},
-    (result: GotoMarkerResult) => {
-      emit('done')
-      if (result.result !== '') {
-        console.error('Returning to Start ended with error: ', result.result)
-      }
-    },
-    (feedback: GotoMarkerFeedback) => {
-      console.log('Return to Start feedback: ', feedback)
-    },
-  )
-  emit('moving', returnToStartAction)
+  emit('moving')
+
+  try {
+    props.action.sendGoal(
+      createGotoMarkerGoal(),
+      (result: GotoMarkerResult) => {
+        emit('done')
+        if (result.result && result.result !== '') {
+          console.error('Returning to Start ended with error: ', result.result)
+        }
+      },
+      (feedback: GotoMarkerFeedback) => {
+        console.log('Return to Start feedback: ', feedback)
+      },
+    )
+  } catch (err) {
+    console.error('Failed to send ReturnToStart goal', err)
+    // Ensure UI state is restored if sending the goal fails immediately
+    emit('done')
+  }
 }
 </script>
 
