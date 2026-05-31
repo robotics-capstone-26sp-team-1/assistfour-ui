@@ -33,7 +33,11 @@ const isActionInProgress = ref(false)
     <br />
     <Panel header="Game Controls" v-if="isConnected">
       <div class="flex gap-4" v-if="!isActionInProgress">
-        <GetToken />
+        <GetToken
+          :ros="ros"
+          @moving="isActionInProgress = true"
+          @done="isActionInProgress = false"
+        />
         <div />
         <PlayColumn />
         <div />

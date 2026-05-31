@@ -17,6 +17,7 @@
   "dependencies": {
     "@primeuix/themes": "^2.0.3",
     "@tailwindcss/vite": "^4.3.0",
+    "primeicons": "^7.0.0",
     "primevue": "^4.5.5",
     "roslib": "^2.1.0",
     "tailwindcss": "^4.3.0",
