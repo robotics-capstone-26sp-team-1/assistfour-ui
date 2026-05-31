@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Action, type Ros } from 'roslib'
 import {
-  createGotoColumnGoal,
-  type GotoColumnFeedback,
-  type GotoColumnGoal,
-  type GotoColumnResult,
+  createPlayColumnGoal,
+  type PlayColumnFeedback,
+  type PlayColumnGoal,
+  type PlayColumnResult,
 } from '@/types/messages.ts'
 
 /// Props.
@@ -15,28 +15,28 @@ const emit = defineEmits<{
 }>()
 
 /// Action client.
-const gotoColumnAction = new Action<GotoColumnGoal, GotoColumnFeedback, GotoColumnResult>({
+const playColumnAction = new Action<PlayColumnGoal, PlayColumnFeedback, PlayColumnResult>({
   ros,
-  name: '/goto_column',
-  actionType: 'assistfour/action/GotoColumn',
+  name: '/play_column',
+  actionType: 'assistfour/action/PlayColumn',
 })
 
 /// Functions.
-function callGotoColumn(column: number) {
-  console.log('Goto column', column)
-  gotoColumnAction.sendGoal(
-    createGotoColumnGoal(column),
-    (result: GotoColumnResult) => {
+function callPlayColumn(column: number) {
+  console.log('Play column', column)
+  playColumnAction.sendGoal(
+    createPlayColumnGoal(column),
+    (result: PlayColumnResult) => {
       emit('done')
       if (result.result !== '') {
-        console.error('Get Token ended with error: ', result.result)
+        console.error('Play Column ended with error: ', result.result)
       }
     },
-    (feedback: GotoColumnFeedback) => {
-      console.log('Get Token feedback: ', feedback)
+    (feedback: PlayColumnFeedback) => {
+      console.log('Play Column feedback: ', feedback)
     },
   )
-  emit('moving', gotoColumnAction)
+  emit('moving', playColumnAction)
 }
 </script>
 
@@ -47,6 +47,6 @@ function callGotoColumn(column: number) {
     :label="String(num)"
     class="grow h-32"
     size="large"
-    @click="callGotoColumn(num)"
+    @click="callPlayColumn(num)"
   />
 </template>

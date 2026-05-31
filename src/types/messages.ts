@@ -9,18 +9,18 @@ export type GotoMarkerFeedback = {
   progress: string
 }
 
-// Goto Column action message type.
-export const createGotoColumnGoal = (column: number): GotoColumnGoal => ({
+// Play Column action message type.
+export const createPlayColumnGoal = (column: number): PlayColumnGoal => ({
   column: column,
 })
-export type GotoColumnGoal = {
+export type PlayColumnGoal = {
   column: number
 }
 
-export type GotoColumnResult = {
+export type PlayColumnResult = {
   result: string
 }
 
-export type GotoColumnFeedback = {
+export type PlayColumnFeedback = {
   progress: string
 }
