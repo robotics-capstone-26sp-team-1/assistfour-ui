@@ -4,7 +4,10 @@ import type { GotoMarkerFeedback, GotoMarkerGoal, GotoMarkerResult } from '@/typ
 
 /// Props.
 const { ros } = defineProps<{ ros: Ros }>()
-const emit = defineEmits(['moving', 'done'])
+const emit = defineEmits<{
+  (e: 'moving', action: Action): void
+  (e: 'done'): void
+}>()
 
 /// Action client.
 const returnToStartAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
@@ -27,7 +30,7 @@ function callReturnToStart() {
       console.log('Return to Start feedback: ', feedback)
     },
   )
-  emit('moving')
+  emit('moving', returnToStartAction)
 }
 </script>
 

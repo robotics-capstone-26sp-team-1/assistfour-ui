@@ -9,10 +9,13 @@ import {
 
 /// Props.
 const { ros } = defineProps<{ ros: Ros }>()
-const emit = defineEmits(['moving', 'done'])
+const emit = defineEmits<{
+  (e: 'moving', action: Action): void
+  (e: 'done'): void
+}>()
 
 /// Action client.
-const getTokenAction = new Action<GotoColumnGoal, GotoColumnFeedback, GotoColumnResult>({
+const gotoColumnAction = new Action<GotoColumnGoal, GotoColumnFeedback, GotoColumnResult>({
   ros,
   name: '/goto_column',
   actionType: 'assistfour/action/GotoColumn',
@@ -21,7 +24,7 @@ const getTokenAction = new Action<GotoColumnGoal, GotoColumnFeedback, GotoColumn
 /// Functions.
 function callGotoColumn(column: number) {
   console.log('Goto column', column)
-  getTokenAction.sendGoal(
+  gotoColumnAction.sendGoal(
     createGotoColumnGoal(column),
     (result: GotoColumnResult) => {
       emit('done')
@@ -33,7 +36,7 @@ function callGotoColumn(column: number) {
       console.log('Get Token feedback: ', feedback)
     },
   )
-  emit('moving')
+  emit('moving', gotoColumnAction)
 }
 </script>
 
