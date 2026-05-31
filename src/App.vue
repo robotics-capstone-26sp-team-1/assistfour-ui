@@ -15,7 +15,7 @@ const isConnected = ref(false)
   <div class="container mx-auto">
     <Menubar>
       <template #start>
-        <h1 class="text-2xl">Lab 13: Programming by Demonstration</h1>
+        <h1 class="text-2xl">AssistFour</h1>
       </template>
     </Menubar>
     <br />

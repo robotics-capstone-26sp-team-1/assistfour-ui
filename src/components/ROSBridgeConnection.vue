@@ -39,6 +39,7 @@ function connectToRos() {
   const rosUrl = `ws://${trimmedIp}:9090`
   ros.connect(rosUrl)
 }
+
 function disconnectFromRos() {
   // Ignore if already disconnected.
   if (!rosConnected.value) return
@@ -53,6 +54,7 @@ function disconnectFromRos() {
     <div class="flex gap-4 mb-4">
       <Button label="Slinky" severity="secondary" @click="rosIp = 'slinky.hcrlab.cs.washington.edu'" />
       <Button label="Weird-Stretch" severity="secondary" @click="rosIp = 'weird-stretch.cs.washington.edu'" />
+      <Button label="Rocky" severity="secondary" @click="rosIp = 'rocky.hcrlab.cs.washington.edu'" />
     </div>
     <div class="flex gap-4">
       <IftaLabel>
