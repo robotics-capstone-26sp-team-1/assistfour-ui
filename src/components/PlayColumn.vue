@@ -15,7 +15,7 @@ const emit = defineEmits(['moving', 'done'])
 
 /// Functions.
 function callPlayColumn(column: number) {
-  console.log('Play column', column)
+  console.log('Playing column', column)
   emit('moving')
 
   try {
@@ -24,11 +24,11 @@ function callPlayColumn(column: number) {
       (result: PlayColumnResult) => {
         emit('done')
         if (result.result && result.result !== '') {
-          console.error('Play Column ended with error: ', result.result)
+          console.error('Play Column ended with error:', result.result)
         }
       },
       (feedback: PlayColumnFeedback) => {
-        console.log('Play Column feedback: ', feedback)
+        console.log('Play Column feedback:', feedback)
       },
     )
   } catch (err) {

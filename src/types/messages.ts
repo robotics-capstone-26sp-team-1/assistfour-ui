@@ -1,4 +1,5 @@
 // Goto Marker action message types.
+export const createGotoMarkerGoal = (): GotoMarkerGoal => ({})
 export type GotoMarkerGoal = object
 
 export type GotoMarkerResult = {

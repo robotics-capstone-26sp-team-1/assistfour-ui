@@ -15,6 +15,7 @@ const emit = defineEmits(['moving', 'done'])
 
 /// Functions.
 function callReturnToStart() {
+  console.log('Returning to Start...')
   emit('moving')
 
   try {
@@ -23,11 +24,11 @@ function callReturnToStart() {
       (result: GotoMarkerResult) => {
         emit('done')
         if (result.result && result.result !== '') {
-          console.error('Returning to Start ended with error: ', result.result)
+          console.error('Returning to Start ended with error:', result.result)
         }
       },
       (feedback: GotoMarkerFeedback) => {
-        console.log('Return to Start feedback: ', feedback)
+        console.log('Return to Start feedback:', feedback)
       },
     )
   } catch (err) {

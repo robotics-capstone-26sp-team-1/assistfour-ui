@@ -15,6 +15,7 @@ const emit = defineEmits(['moving', 'done'])
 
 /// Functions.
 function callGetToken() {
+  console.log('Getting token...')
   emit('moving')
 
   try {
