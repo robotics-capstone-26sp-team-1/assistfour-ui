@@ -2,22 +2,25 @@
 export type GotoMarkerGoal = object
 
 export type GotoMarkerResult = {
-  result: string;
+  result: string
 }
 
 export type GotoMarkerFeedback = {
-  progress: string;
+  progress: string
 }
 
 // Goto Column action message type.
+export const createGotoColumnGoal = (column: number): GotoColumnGoal => ({
+  column: column,
+})
 export type GotoColumnGoal = {
-  column: number;
+  column: number
 }
 
 export type GotoColumnResult = {
-  result: string;
+  result: string
 }
 
 export type GotoColumnFeedback = {
-  progress: string;
+  progress: string
 }

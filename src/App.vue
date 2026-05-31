@@ -39,12 +39,16 @@ const isActionInProgress = ref(false)
           @done="isActionInProgress = false"
         />
         <div />
-        <PlayColumn />
-        <div />
-        <ReturnToStart
+        <PlayColumn
           :ros="ros"
           @done="isActionInProgress = false"
           @moving="isActionInProgress = true"
+        />
+        <div />
+        <ReturnToStart
+          :ros="ros"
+          @moving="isActionInProgress = true"
+          @done="isActionInProgress = false"
         />
       </div>
       <Button label="STOP" severity="danger" class="h-32 w-full" v-else />
