@@ -1,36 +1,14 @@
 <script setup lang="ts">
 import ROSBridgeConnection from '@/components/ROSBridgeConnection.vue'
-import PoseManager from '@/components/PoseManager.vue'
-import PoseSequencer from '@/components/PoseSequencer.vue'
 
 import { ref } from 'vue'
 import { Ros } from 'roslib'
-import type { GetPoseResponse, NamedLink } from '@/types/messages.ts'
 
 /// ROS instance.
 const ros = new Ros()
 
 /// Connected to ROS bridge
 const isConnected = ref(false)
-
-/// Recording of all poses.
-const poses = ref<Record<string, GetPoseResponse>>({})
-
-/// Ordered pose names.
-const sequence = ref<NamedLink[]>([])
-
-function addPose(name: string, pose: GetPoseResponse) {
-  poses.value[name] = pose
-}
-function deletePose(name: string) {
-  delete poses.value[name]
-}
-function addPoseToSequence(pose: NamedLink) {
-  sequence.value.push(pose)
-}
-function removePoseFromSequence(index: number) {
-  sequence.value.splice(index, 1)
-}
 </script>
 
 <template>
@@ -48,20 +26,6 @@ function removePoseFromSequence(index: number) {
     />
     <br />
     <div v-if="isConnected">
-      <PoseManager
-        :ros="ros"
-        :poses="poses"
-        @onPoseSave="addPose"
-        @onDeletePose="deletePose"
-        @onPoseSent="addPoseToSequence"
-      />
-      <br />
-      <PoseSequencer
-        :ros="ros"
-        :poses="poses"
-        :sequence="sequence"
-        @onDeleteFromSequence="removePoseFromSequence"
-      />
     </div>
   </div>
 </template>
