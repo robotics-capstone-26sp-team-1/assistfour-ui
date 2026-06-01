@@ -4,7 +4,7 @@ import {
   createPlayColumnGoal,
   type PlayColumnFeedback,
   type PlayColumnGoal,
-  type PlayColumnResult,
+  type PlayColumnResult
 } from '@/types/messages.ts'
 
 /// Props: receive action client from App.vue
@@ -22,14 +22,15 @@ function callPlayColumn(column: number) {
     props.action.sendGoal(
       createPlayColumnGoal(column),
       (result: PlayColumnResult) => {
-        emit('done')
+        console.log('Done')
         if (result.result && result.result !== '') {
           console.error('Play Column ended with error:', result.result)
         }
+        emit('done')
       },
       (feedback: PlayColumnFeedback) => {
         console.log('Play Column feedback:', feedback)
-      },
+      }
     )
   } catch (err) {
     console.error('Failed to send PlayColumn goal', err)

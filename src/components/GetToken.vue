@@ -4,7 +4,7 @@ import {
   createGotoMarkerGoal,
   type GotoMarkerFeedback,
   type GotoMarkerGoal,
-  type GotoMarkerResult,
+  type GotoMarkerResult
 } from '@/types/messages.ts'
 
 /// Props: receive action client from App.vue
@@ -22,19 +22,20 @@ function callGetToken() {
     props.action.sendGoal(
       createGotoMarkerGoal(),
       (result: GotoMarkerResult) => {
-        emit('done')
+        console.log('Done')
         if (result.result && result.result !== '') {
           console.error('Get Token ended with error: ', result.result)
         }
+
+        // Revert UI.
+        emit('done')
       },
       (feedback: GotoMarkerFeedback) => {
         console.log('Get Token feedback: ', feedback)
-      },
+      }
     )
   } catch (err) {
     console.error('Failed to send GetToken goal', err)
-    // Ensure UI state is restored if sending the goal fails immediately
-    emit('done')
   }
 }
 </script>

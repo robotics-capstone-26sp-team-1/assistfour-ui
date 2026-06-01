@@ -9,7 +9,7 @@ import type {
   GotoMarkerResult,
   PlayColumnFeedback,
   PlayColumnResult,
-  PlayColumnGoal,
+  PlayColumnGoal
 } from './types/messages.ts'
 import GetToken from './components/GetToken.vue'
 import PlayColumn from './components/PlayColumn.vue'
@@ -25,17 +25,17 @@ const isConnected = ref(false)
 const getTokenAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
   ros,
   name: '/get_token',
-  actionType: 'assistfour_interfaces/action/GotoMarker',
+  actionType: 'assistfour_interfaces/action/GotoMarker'
 })
 const playColumnAction = new Action<PlayColumnGoal, PlayColumnFeedback, PlayColumnResult>({
   ros,
   name: '/play_column',
-  actionType: 'assistfour_interfaces/action/PlayColumn',
+  actionType: 'assistfour_interfaces/action/PlayColumn'
 })
 const returnToStartAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
   ros,
   name: '/return_to_start',
-  actionType: 'assistfour_interfaces/action/GotoMarker',
+  actionType: 'assistfour_interfaces/action/GotoMarker'
 })
 
 /// Action in progress flag.
@@ -45,26 +45,20 @@ const isActionInProgress = ref(false)
  * Cancel all goals on the action clients.
  */
 function stopActionInProgress(): void {
-  if (typeof getTokenAction?.cancelAllGoals === 'function') {
-    try {
-      getTokenAction.cancelAllGoals()
-    } catch (err) {
-      console.error('Failed to cancel goals on getTokenAction:', err)
-    }
+  try {
+    getTokenAction.cancelAllGoals()
+  } catch (err) {
+    console.error('Failed to cancel goals on getTokenAction:', err)
   }
-  if (typeof playColumnAction?.cancelAllGoals === 'function') {
-    try {
-      playColumnAction.cancelAllGoals()
-    } catch (err) {
-      console.error('Failed to cancel goals on playColumnAction:', err)
-    }
+  try {
+    playColumnAction.cancelAllGoals()
+  } catch (err) {
+    console.error('Failed to cancel goals on playColumnAction:', err)
   }
-  if (typeof returnToStartAction?.cancelAllGoals === 'function') {
-    try {
-      returnToStartAction.cancelAllGoals()
-    } catch (err) {
-      console.error('Failed to cancel goals on returnToStartAction:', err)
-    }
+  try {
+    returnToStartAction.cancelAllGoals()
+  } catch (err) {
+    console.error('Failed to cancel goals on returnToStartAction:', err)
   }
   isActionInProgress.value = false
 }

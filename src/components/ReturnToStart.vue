@@ -4,7 +4,7 @@ import {
   createGotoMarkerGoal,
   type GotoMarkerFeedback,
   type GotoMarkerGoal,
-  type GotoMarkerResult,
+  type GotoMarkerResult
 } from '@/types/messages.ts'
 
 /// Props: receive action client from App.vue
@@ -22,14 +22,15 @@ function callReturnToStart() {
     props.action.sendGoal(
       createGotoMarkerGoal(),
       (result: GotoMarkerResult) => {
-        emit('done')
+        console.log('Done')
         if (result.result && result.result !== '') {
           console.error('Returning to Start ended with error:', result.result)
         }
+        emit('done')
       },
       (feedback: GotoMarkerFeedback) => {
         console.log('Return to Start feedback:', feedback)
-      },
+      }
     )
   } catch (err) {
     console.error('Failed to send ReturnToStart goal', err)
