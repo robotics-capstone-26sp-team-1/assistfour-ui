@@ -79,7 +79,7 @@ function stopActionInProgress(): void {
     />
     <br />
     <Panel header="Game Controls" v-if="isConnected">
-      <div v-if="!isActionInProgress" class="flex gap-4">
+      <div class="flex gap-4" v-show="!isActionInProgress">
         <GetToken
           :action="getTokenAction"
           @moving="isActionInProgress = true"
@@ -99,7 +99,7 @@ function stopActionInProgress(): void {
         />
       </div>
       <Button
-        v-else
+        v-if="isActionInProgress"
         class="h-32 w-full"
         label="STOP"
         severity="danger"
