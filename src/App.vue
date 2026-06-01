@@ -25,17 +25,17 @@ const isConnected = ref(false)
 const getTokenAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
   ros,
   name: '/get_token',
-  actionType: 'assistfour/action/GotoMarker',
+  actionType: 'assistfour_interfaces/action/GotoMarker',
 })
 const playColumnAction = new Action<PlayColumnGoal, PlayColumnFeedback, PlayColumnResult>({
   ros,
   name: '/play_column',
-  actionType: 'assistfour/action/PlayColumn',
+  actionType: 'assistfour_interfaces/action/PlayColumn',
 })
 const returnToStartAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
   ros,
   name: '/return_to_start',
-  actionType: 'assistfour/action/GotoMarker',
+  actionType: 'assistfour_interfaces/action/GotoMarker',
 })
 
 /// Action in progress flag.
