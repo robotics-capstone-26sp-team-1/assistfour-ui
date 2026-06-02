@@ -14,12 +14,24 @@ import type {
 import GetToken from './components/GetToken.vue'
 import PlayColumn from './components/PlayColumn.vue'
 import ReturnToStart from './components/ReturnToStart.vue'
+import VoiceCommandPanel from './components/VoiceCommandPanel.vue'
+
+type VoiceCommand =
+  | { type: 'get-token' }
+  | { type: 'play-column'; column: number }
+  | { type: 'return-to-start' }
+  | { type: 'stop' }
+
+const getTokenButton = ref<{ callGetToken: () => void } | null>(null)
+const playColumnButton = ref<{ callPlayColumn: (column: number) => void } | null>(null)
+const returnToStartButton = ref<{ callReturnToStart: () => void } | null>(null)
+const currentActionLabel = ref('none')
 
 /// ROS instance.
 const ros = new Ros()
 
 /// Connected to ROS bridge.
-const isConnected = ref(false)
+const isConnected = ref(true)
 
 /// Action clients.
 const getTokenAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
@@ -61,6 +73,52 @@ function stopActionInProgress(): void {
     console.error('Failed to cancel goals on returnToStartAction:', err)
   }
   isActionInProgress.value = false
+  currentActionLabel.value = 'none'
+}
+
+function startActionInProgress(label: string): void {
+  currentActionLabel.value = label
+  isActionInProgress.value = true
+}
+
+function startColumnAction(column: number): void {
+  startActionInProgress(`Column ${column}`)
+}
+
+function finishActionInProgress(): void {
+  isActionInProgress.value = false
+  currentActionLabel.value = 'none'
+}
+
+function handleVoiceCommand(command: VoiceCommand): void {
+  if (command.type === 'stop') {
+    currentActionLabel.value = 'STOP'
+    if (isActionInProgress.value) {
+      stopActionInProgress()
+    }
+    return
+  }
+
+  if (isActionInProgress.value) {
+    return
+  }
+
+  if (command.type === 'get-token') {
+    currentActionLabel.value = 'Get Token'
+    getTokenButton.value?.callGetToken()
+    return
+  }
+
+  if (command.type === 'play-column') {
+    currentActionLabel.value = `Column ${command.column}`
+    playColumnButton.value?.callPlayColumn(command.column)
+    return
+  }
+
+  if (command.type === 'return-to-start') {
+    currentActionLabel.value = 'Return to Start'
+    returnToStartButton.value?.callReturnToStart()
+  }
 }
 </script>
 
@@ -78,24 +136,33 @@ function stopActionInProgress(): void {
       @disconnected="isConnected = false"
     />
     <br />
+    <VoiceCommandPanel
+      :is-action-in-progress="isActionInProgress"
+      :current-action-label="currentActionLabel"
+      @command="handleVoiceCommand"
+    />
+    <br />
     <Panel header="Game Controls" v-if="isConnected">
       <div class="flex gap-4" v-show="!isActionInProgress">
         <GetToken
+          ref="getTokenButton"
           :action="getTokenAction"
-          @moving="isActionInProgress = true"
-          @done="isActionInProgress = false"
+          @moving="startActionInProgress('Get Token')"
+          @done="finishActionInProgress"
         />
         <div />
         <PlayColumn
+          ref="playColumnButton"
           :action="playColumnAction"
-          @moving="isActionInProgress = true"
-          @done="isActionInProgress = false"
+          @moving="startColumnAction"
+          @done="finishActionInProgress"
         />
         <div />
         <ReturnToStart
+          ref="returnToStartButton"
           :action="returnToStartAction"
-          @moving="isActionInProgress = true"
-          @done="isActionInProgress = false"
+          @moving="startActionInProgress('Return to Start')"
+          @done="finishActionInProgress"
         />
       </div>
       <Button

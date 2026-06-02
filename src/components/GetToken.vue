@@ -38,6 +38,8 @@ function callGetToken() {
     console.error('Failed to send GetToken goal', err)
   }
 }
+
+defineExpose({ callGetToken })
 </script>
 
 <template>

@@ -38,6 +38,8 @@ function callReturnToStart() {
     emit('done')
   }
 }
+
+defineExpose({ callReturnToStart })
 </script>
 
 <template>

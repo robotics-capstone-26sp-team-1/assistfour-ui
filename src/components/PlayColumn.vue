@@ -11,12 +11,15 @@ import {
 const props = defineProps<{
   action: Action<PlayColumnGoal, PlayColumnFeedback, PlayColumnResult>
 }>()
-const emit = defineEmits(['moving', 'done'])
+const emit = defineEmits<{
+  moving: [column: number]
+  done: []
+}>()
 
 /// Functions.
 function callPlayColumn(column: number) {
   console.log('Playing column', column)
-  emit('moving')
+  emit('moving', column)
 
   try {
     props.action.sendGoal(
@@ -38,6 +41,8 @@ function callPlayColumn(column: number) {
     emit('done')
   }
 }
+
+defineExpose({ callPlayColumn })
 </script>
 
 <template>
