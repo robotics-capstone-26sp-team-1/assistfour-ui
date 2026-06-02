@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
-
-type VoiceCommand =
-  | { type: 'get-token' }
-  | { type: 'play-column'; column: number }
-  | { type: 'return-to-start' }
-  | { type: 'stop' }
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 
 type SpeechRecognitionLike = {
   lang: string
@@ -23,17 +17,28 @@ type SpeechRecognitionConstructor = new () => SpeechRecognitionLike
 
 const props = defineProps<{
   isActionInProgress: boolean
-  currentActionLabel: string
 }>()
 
-// Emit a parsed voice command to the parent so it can trigger the matching button action.
 const emit = defineEmits<{
-  command: [command: VoiceCommand]
+  stop: []
+  'get-token': []
+  'play-column': [column: number]
+  'return-to-start': []
 }>()
 
 const recognition = ref<SpeechRecognitionLike | null>(null)
 const listening = ref(false)
 const errorMessage = ref('')
+const currentActionLabel = ref('none')
+
+watch(
+  () => props.isActionInProgress,
+  (isActionInProgress) => {
+    if (!isActionInProgress) {
+      currentActionLabel.value = 'none'
+    }
+  }
+)
 
 const isSupported = computed(() => {
   return typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)
@@ -99,6 +104,41 @@ function parseCommand(text: string): VoiceCommand | null {
   return null
 }
 
+type VoiceCommand =
+  | { type: 'get-token' }
+  | { type: 'play-column'; column: number }
+  | { type: 'return-to-start' }
+  | { type: 'stop' }
+
+function dispatchCommand(command: VoiceCommand): void {
+  if (command.type === 'stop') {
+    currentActionLabel.value = 'STOP'
+    emit('stop')
+    return
+  }
+
+  if (props.isActionInProgress) {
+    return
+  }
+
+  if (command.type === 'get-token') {
+    currentActionLabel.value = 'Get Token'
+    emit('get-token')
+    return
+  }
+
+  if (command.type === 'play-column') {
+    currentActionLabel.value = `Column ${command.column}`
+    emit('play-column', command.column)
+    return
+  }
+
+  if (command.type === 'return-to-start') {
+    currentActionLabel.value = 'Return to Start'
+    emit('return-to-start')
+  }
+}
+
 // Create the browser speech recognizer if the current browser supports it.
 function createRecognition(): SpeechRecognitionLike | null {
   if (typeof window === 'undefined') {
@@ -138,7 +178,7 @@ function createRecognition(): SpeechRecognitionLike | null {
     if (finalText.trim() !== '') {
       const command = parseCommand(finalText)
       if (command) {
-        emit('command', command)
+        dispatchCommand(command)
         if (command.type !== 'stop' || props.isActionInProgress) {
           recognition.value?.stop()
         }
