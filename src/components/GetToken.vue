@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Action } from 'roslib'
+import { ref } from 'vue'
 import {
   createGotoMarkerGoal,
   type GotoMarkerFeedback,
@@ -12,6 +13,7 @@ const props = defineProps<{
   action: Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>
 }>()
 const emit = defineEmits(['moving', 'done'])
+const buttonRef = ref<any>(null)
 
 /// Functions.
 function callGetToken() {
@@ -38,10 +40,18 @@ function callGetToken() {
     console.error('Failed to send GetToken goal', err)
   }
 }
+
+function clickGetToken(): void {
+  buttonRef.value?.$el?.click()
+}
+
+defineExpose({ callGetToken, clickGetToken })
+
 </script>
 
 <template>
   <Button
+    ref="buttonRef"
     label="Get Token"
     icon="pi pi-cart-plus"
     size="large"

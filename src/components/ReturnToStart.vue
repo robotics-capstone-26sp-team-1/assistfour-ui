@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Action } from 'roslib'
+import { ref } from 'vue'
 import {
   createGotoMarkerGoal,
   type GotoMarkerFeedback,
@@ -12,6 +13,7 @@ const props = defineProps<{
   action: Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>
 }>()
 const emit = defineEmits(['moving', 'done'])
+const buttonRef = ref<any>(null)
 
 /// Functions.
 function callReturnToStart() {
@@ -38,10 +40,18 @@ function callReturnToStart() {
     emit('done')
   }
 }
+
+function clickReturnToStart(): void {
+  buttonRef.value?.$el?.click()
+}
+
+defineExpose({ callReturnToStart, clickReturnToStart })
+
 </script>
 
 <template>
   <Button
+    ref="buttonRef"
     class="h-32"
     icon="pi pi-home"
     label="Return to Start"

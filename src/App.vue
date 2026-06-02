@@ -13,13 +13,19 @@ import type {
 } from './types/messages.ts'
 import GetToken from './components/GetToken.vue'
 import PlayColumn from './components/PlayColumn.vue'
+
 import ReturnToStart from './components/ReturnToStart.vue'
+
+
+const getTokenButton = ref<{ clickGetToken: () => void } | null>(null)
+const playColumnButton = ref<{ clickPlayColumn: (column: number) => void } | null>(null)
+const returnToStartButton = ref<{ clickReturnToStart: () => void } | null>(null)
 
 /// ROS instance.
 const ros = new Ros()
 
 /// Connected to ROS bridge.
-const isConnected = ref(false)
+const isConnected = ref(true)
 
 /// Action clients.
 const getTokenAction = new Action<GotoMarkerGoal, GotoMarkerFeedback, GotoMarkerResult>({
@@ -62,6 +68,30 @@ function stopActionInProgress(): void {
   }
   isActionInProgress.value = false
 }
+
+function startActionInProgress(): void {
+  isActionInProgress.value = true
+}
+
+function startColumnAction(column: number): void {
+  isActionInProgress.value = true
+}
+
+function triggerGetToken(): void {
+  getTokenButton.value?.clickGetToken()
+}
+
+function triggerPlayColumn(column: number): void {
+  playColumnButton.value?.clickPlayColumn(column)
+}
+
+function triggerReturnToStart(): void {
+  returnToStartButton.value?.clickReturnToStart()
+}
+
+function finishActionInProgress(): void {
+  isActionInProgress.value = false
+}
 </script>
 
 <template>
@@ -78,24 +108,36 @@ function stopActionInProgress(): void {
       @disconnected="isConnected = false"
     />
     <br />
+    <VoiceCommandPanel
+      v-if="isConnected"
+      :is-action-in-progress="isActionInProgress"
+      @stop="stopActionInProgress"
+      @get-token="triggerGetToken"
+      @play-column="triggerPlayColumn"
+      @return-to-start="triggerReturnToStart"
+    />
+    <br v-if="isConnected" />
     <Panel header="Game Controls" v-if="isConnected">
       <div class="flex gap-4" v-show="!isActionInProgress">
         <GetToken
+          ref="getTokenButton"
           :action="getTokenAction"
-          @moving="isActionInProgress = true"
-          @done="isActionInProgress = false"
+          @moving="startActionInProgress"
+          @done="finishActionInProgress"
         />
         <div />
         <PlayColumn
+          ref="playColumnButton"
           :action="playColumnAction"
-          @moving="isActionInProgress = true"
-          @done="isActionInProgress = false"
+          :on-moving="startColumnAction"
+          :on-done="finishActionInProgress"
         />
         <div />
         <ReturnToStart
+          ref="returnToStartButton"
           :action="returnToStartAction"
-          @moving="isActionInProgress = true"
-          @done="isActionInProgress = false"
+          @moving="startActionInProgress"
+          @done="finishActionInProgress"
         />
       </div>
       <Button
